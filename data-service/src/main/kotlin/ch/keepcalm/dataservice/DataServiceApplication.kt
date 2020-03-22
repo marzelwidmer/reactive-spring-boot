@@ -8,6 +8,7 @@ import org.springframework.context.event.EventListener
 import org.springframework.data.annotation.Id
 import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.repository.Tailable
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
@@ -53,6 +54,8 @@ class SampleDataInitializer(private val reservationRepository: ReservationReposi
 }
 
 interface ReservationRepository : ReactiveCrudRepository<Reseration, String> {
+    // https://docs.mongodb.com/manual/core/tailable-cursors/
+    @Tailable
     fun findByName(name: String): Flux<Reseration>
 }
 
