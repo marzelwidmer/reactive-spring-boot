@@ -55,7 +55,7 @@ class SampleDataInitializer(private val reservationRepository: ReservationReposi
 
 interface ReservationRepository : ReactiveCrudRepository<Reseration, String> {
     // https://docs.mongodb.com/manual/core/tailable-cursors/
-    @Tailable
+//    @Tailable
     fun findByName(name: String): Flux<Reseration>
 }
 
