@@ -21,21 +21,21 @@
 
 	<dependencies>
 		<!-- Reacitve MongoDB		-->
-		<dependency>
+<!--		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-		</dependency>
-		<!--
+		</dependency>-->
+		<!-- R2DBC -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
 		</dependency>
+		<!-- R2DBC - PostgreSQL		-->
 		<dependency>
 			<groupId>io.r2dbc</groupId>
 			<artifactId>r2dbc-postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		-->
 
 		<!-- WebFlux -->
 		<dependency>

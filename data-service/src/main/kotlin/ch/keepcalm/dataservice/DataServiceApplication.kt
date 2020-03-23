@@ -6,13 +6,9 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
 import org.springframework.context.event.EventListener
 import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.TypeAlias
-import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.repository.Tailable
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
-import reactor.kotlin.core.publisher.toFlux
 import java.util.*
 
 
@@ -59,6 +55,8 @@ interface ReservationRepository : ReactiveCrudRepository<Reseration, String> {
     fun findByName(name: String): Flux<Reseration>
 }
 
-@Document
-@TypeAlias("reservation")
+
+// TODO: 23.03.20  Used for MongoDB
+//@Document
+//@TypeAlias("reservation")
 data class Reseration(@Id val id: String = UUID.randomUUID().toString(), val name: String)
