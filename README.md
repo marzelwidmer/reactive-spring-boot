@@ -15,11 +15,12 @@ docker run -it --rm --name postgresdb -p 5432:5432 -e POSTGRES_USER=postgres -e 
 
 ## Connect to Postgresql  
 ```bash
-docker exec -it postgres psql -Uaccount -a account
+docker exec -it postgresdb  psql -Upostgres -a postgres
 ```
+
 ## Select * from table
 ```sql
-SELECT * FROM account;
+SELECT * FROM postgres;
 ```
 
 ```bash

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import java.util.*
 
-
 @SpringBootApplication
 class DataServiceApplication
 
@@ -52,11 +51,12 @@ class SampleDataInitializer(private val reservationRepository: ReservationReposi
 interface ReservationRepository : ReactiveCrudRepository<Reseration, String> {
     // https://docs.mongodb.com/manual/core/tailable-cursors/
 //    @Tailable
-    fun findByName(name: String): Flux<Reseration>
+//    fun findByName(name: String): Flux<Reseration>
 }
 
 
 // TODO: 23.03.20  Used for MongoDB
 //@Document
 //@TypeAlias("reservation")
+//data class Reseration(@Id val id: String = UUID.randomUUID().toString(), val name: String)
 data class Reseration(@Id val id: String = UUID.randomUUID().toString(), val name: String)
