@@ -6,6 +6,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
 import org.springframework.context.event.EventListener
 import org.springframework.data.annotation.Id
+import org.springframework.data.annotation.TypeAlias
+import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
@@ -34,8 +36,7 @@ class SampleDataInitializer(private val reservationRepository: ReservationReposi
                 .deleteAll()
                 .thenMany(reservations)
                 .thenMany(reservationRepository.findAll())
-                .subscribe {
-                    reservation ->
+                .subscribe { reservation ->
                     logger.info("---> $reservation")
                 }
         //  Shortform
@@ -55,8 +56,8 @@ interface ReservationRepository : ReactiveCrudRepository<Reseration, String> {
 }
 
 
-// TODO: 23.03.20  Used for MongoDB
-//@Document
-//@TypeAlias("reservation")
-//data class Reseration(@Id val id: String = UUID.randomUUID().toString(), val name: String)
+@Document
+@TypeAlias("reservation")
 data class Reseration(@Id val id: String = UUID.randomUUID().toString(), val name: String)
+
+
