@@ -7,6 +7,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
 import org.springframework.context.event.EventListener
 import org.springframework.data.annotation.Id
+import org.springframework.data.r2dbc.core.DatabaseClient
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
@@ -22,25 +23,36 @@ fun main(args: Array<String>) {
 }
 
 @Component
-class SampleDataInitializer(private val reservationRepository: ReservationRepository) {
+class SampleDataInitializer(
+    private val reservationRepository: ReservationRepository,
+    private val databaseClient: DatabaseClient
+) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
 
     @EventListener(classes = [ApplicationReadyEvent::class])
     fun ready() {
+
+        // LowLevel Database Client
+        // Read Database Entries
+        this.databaseClient
+            .select().from("reservation").`as`(Reservation::class.java)
+            .fetch()
+            .all()
+            .doOnComplete { logger.info("------------------------------------") }
+            .subscribe { logger.info("<-- $it") }
+
         val reservations = Flux.just("Madhura", "Josh", "Olga", "Marcin", "Stéphane", "Violetta", "Ria", "Dr. Syer")
-                .map { name -> Reservation(id = null, name = name) }
-                .flatMap { reservationRepository.save(it) }
+            .map { name -> Reservation(id = null, name = name) }
+            .flatMap { reservationRepository.save(it) }
 //                .flatMapSequential { reservationRepository.save(it) }
 
         reservationRepository
-                .deleteAll()
-                .thenMany(reservations)
-                .thenMany(reservationRepository.findAll())
-                .subscribe { reservation ->
-                    logger.info("---> $reservation")
-                }
+            .deleteAll()
+            .thenMany(reservations)
+            .thenMany(reservationRepository.findAll())
+            .subscribe { reservation -> logger.info("---> $reservation") }
 
         //  Shortform
 //        reservationRepository.deleteAll()
