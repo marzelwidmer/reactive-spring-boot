@@ -65,3 +65,17 @@ CREATE TABLE reservation(
 ```sql
 SELECT * FROM reservation;
 ```
+
+```bash
+ id |   name
+----+----------
+ 33 | Madhura
+ 34 | Ria
+ 35 | Olga
+ 36 | Violetta
+ 37 | Marcin
+ 38 | Stéphane
+ 39 | Josh
+ 40 | Dr. Syer
+(8 rows)
+```
