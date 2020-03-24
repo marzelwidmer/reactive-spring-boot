@@ -45,23 +45,23 @@ postgres=# \l
 
 ## Connect to a Database
 ```bash
-\c resevation
+\c reservation
 ```
 
 ## Create table 
 ```postgresql
-CREATE TABLE resevation(
+CREATE TABLE reservation(
    ID   SERIAL PRIMARY KEY,
-   NAME varchar(40) NOT NULL
+   NAME varchar(255) NOT NULL
 );
 ```
 
 # Describe Table
 ```postgresql
-\d public.resevation
+\d reservation
 ```
 
 ## Select * from table
 ```sql
-SELECT * FROM resevation;
+SELECT * FROM reservation;
 ```

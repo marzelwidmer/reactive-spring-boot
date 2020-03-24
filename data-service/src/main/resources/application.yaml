@@ -1,8 +1,7 @@
 spring:
-  profiles:
-    active: postgres
+  profiles:  postgres-r2dbc
   r2dbc:
-    url: r2dbc:pool:postgresql://localhost:5432/postgres
+    url: r2dbc:pool:postgresql://localhost:5432/reservation
     username: postgres
     password: secret
 

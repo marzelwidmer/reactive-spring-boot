@@ -1,17 +1,19 @@
 package ch.keepcalm.dataservice
 
+//import org.springframework.data.r2dbc.repository.Query
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
 import org.springframework.context.event.EventListener
+import org.springframework.context.support.beans
 import org.springframework.data.annotation.Id
-import org.springframework.data.annotation.TypeAlias
-import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.r2dbc.repository.Query
+import org.springframework.data.relational.core.mapping.Column
+import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
-import java.util.*
 
 @SpringBootApplication
 class DataServiceApplication
@@ -27,9 +29,9 @@ class SampleDataInitializer(private val reservationRepository: ReservationReposi
 
 
     @EventListener(classes = [ApplicationReadyEvent::class])
-    fun ready(): Unit {
+    fun ready() {
         val reservations = Flux.just("Madhura", "Josh", "Olga", "Marcin", "Stéphane", "Violetta", "Ria", "Dr. Syer")
-                .map { name -> Reseration(name = name) }
+                .map { name -> Reservation(id = null, name = name) }
                 .flatMap { reservation -> reservationRepository.save(reservation) }
 
         reservationRepository
@@ -39,6 +41,7 @@ class SampleDataInitializer(private val reservationRepository: ReservationReposi
                 .subscribe { reservation ->
                     logger.info("---> $reservation")
                 }
+
         //  Shortform
 //        reservationRepository.deleteAll()
 //                .thenMany(listOf("Madhura", "Josh", "Olga", "Marcin", "Stéphane", "Violetta", "Ria", "Dr. Syer").toFlux().map { Reseration(name = it) })
@@ -49,15 +52,20 @@ class SampleDataInitializer(private val reservationRepository: ReservationReposi
 
 }
 
-interface ReservationRepository : ReactiveCrudRepository<Reseration, String> {
-    // https://docs.mongodb.com/manual/core/tailable-cursors/
-//    @Tailable
-//    fun findByName(name: String): Flux<Reseration>
+// MongoDB
+//interface ReservationRepository : ReactiveCrudRepository<Reservation, String> {
+//    fun findByName(name: String): Flux<Reservation>
+//}
+//@Document
+//@TypeAlias("reservation")
+//data class Reservation(@Id val id: String = UUID.randomUUID().toString(), val name: String)
+
+
+// Postgres
+interface ReservationRepository : ReactiveCrudRepository<Reservation, Int> {
+    @Query(value = "select * from reservation where name = $1 ")
+    fun findByName(name: String): Flux<Reservation>
 }
 
-
-@Document
-@TypeAlias("reservation")
-data class Reseration(@Id val id: String = UUID.randomUUID().toString(), val name: String)
-
-
+@Table("Reservation")
+data class Reservation(@Id val id: Int?, @Column("name") val name: String)
