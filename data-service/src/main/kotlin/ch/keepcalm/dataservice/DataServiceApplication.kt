@@ -1,32 +1,63 @@
 package ch.keepcalm.dataservice
 
 //import org.springframework.data.r2dbc.repository.Query
+import io.r2dbc.spi.ConnectionFactory
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Bean
 import org.springframework.context.event.EventListener
+import org.springframework.context.support.beans
 import org.springframework.data.annotation.Id
+import org.springframework.data.r2dbc.connectionfactory.R2dbcTransactionManager
 import org.springframework.data.r2dbc.core.DatabaseClient
 import org.springframework.data.r2dbc.repository.Query
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import org.springframework.data.repository.reactive.ReactiveCrudRepository
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
+import org.springframework.transaction.reactive.TransactionalOperator
 import reactor.core.publisher.Flux
 
 @SpringBootApplication
-class DataServiceApplication
+class DataServiceApplication {
+
+    @Bean
+    fun r2dbcTransactionManager(cf: ConnectionFactory): R2dbcTransactionManager {
+        return R2dbcTransactionManager(cf)
+    }
+}
 
 fun main(args: Array<String>) {
-    runApplication<DataServiceApplication>(*args)
+    runApplication<DataServiceApplication>(*args) {
+        val context = beans {
+            bean {
+                // R2dbcTransactionManager()
+            }
+        }
+        addInitializers(context)
+    }
+}
+
+@Service
+class ReservationService(
+    private val reservationRepository: ReservationRepository,
+    private val transactionalOperator: TransactionalOperator
+) {
+
+    fun saveAll(vararg names: String?): Flux<Reservation> {
+        val reservations = Flux.fromArray(names)
+            .map { name -> Reservation(id = null, name = name) } // TODO: 24.03.20 Take care !!
+            .flatMap { reservationRepository.save(it) }
+        return transactionalOperator.transactional(reservations)
+    }
 }
 
 @Component
-class SampleDataInitializer(
-    private val reservationRepository: ReservationRepository,
-    private val databaseClient: DatabaseClient
-) {
+class SampleDataInitializer(private val reservationRepository: ReservationRepository, private val databaseClient: DatabaseClient,
+                            private val reservationService: ReservationService) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -43,11 +74,13 @@ class SampleDataInitializer(
             .doOnComplete { logger.info("------------------------------------") }
             .subscribe { logger.info("<-- $it") }
 
-        val reservations = Flux.just("Madhura", "Josh", "Olga", "Marcin", "Stéphane", "Violetta", "Ria", "Dr. Syer")
-            .map { name -> Reservation(id = null, name = name) }
-            .flatMap { reservationRepository.save(it) }
+        val reservations = reservationService.saveAll("Foo", "Bar")
+        // Transaction Service is used...
+//        val reservations = Flux.just("Madhura", "Josh", "Olga", "Marcin", "Stéphane", "Violetta", "Ria", "Dr. Syer")
+//            .map { name -> Reservation(id = null, name = name) }
 //                .flatMapSequential { reservationRepository.save(it) }
-
+//            .flatMap { reservationRepository.save(it) }
+//
         reservationRepository
             .deleteAll()
             .thenMany(reservations)
@@ -80,4 +113,4 @@ interface ReservationRepository : ReactiveCrudRepository<Reservation, Int> {
 }
 
 @Table("Reservation")
-data class Reservation(@Id val id: Int?, @Column("name") val name: String)
+data class Reservation(@Id val id: Int?, @Column("name") val name: String?)
