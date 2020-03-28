@@ -30,6 +30,7 @@
              <groupId>org.springframework.boot</groupId>
              <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
          </dependency>
+
         <!-- R2DBC -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
