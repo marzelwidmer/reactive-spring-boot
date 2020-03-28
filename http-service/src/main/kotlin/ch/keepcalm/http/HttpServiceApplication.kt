@@ -1,11 +1,12 @@
-package ch.keepcalm.fooservice
+package ch.keepcalm.http
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class FooServiceApplication
+class HttpServiceApplication
 
 fun main(args: Array<String>) {
-	runApplication<FooServiceApplication>(*args)
+    runApplication<HttpServiceApplication>(*args)
 }
+

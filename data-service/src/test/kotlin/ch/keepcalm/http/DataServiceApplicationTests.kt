@@ -1,10 +1,10 @@
-package ch.keepcalm.fooservice
+package ch.keepcalm.http
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class FooServiceApplicationTests {
+class DataServiceApplicationTests {
 
 	@Test
 	fun contextLoads() {

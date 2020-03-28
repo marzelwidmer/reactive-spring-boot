@@ -1,4 +1,4 @@
-package ch.keepcalm.dataservice
+package ch.keepcalm.http
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication

@@ -9,15 +9,16 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ch.keepcalm</groupId>
-    <artifactId>data-service</artifactId>
+    <artifactId>http-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>data-service</name>
-    <description>Demo project for Spring Boot (R2DBC)</description>
+    <name>http-service</name>
+    <description>Demo project for Spring Boot</description>
 
     <properties>
         <java.version>1.8</java.version>
         <kotlin.version>1.3.70</kotlin.version>
     </properties>
+
 
     <dependencies>
         <!-- Actuator -->
@@ -30,23 +31,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
-        </dependency>
-        <!-- Reacitve MongoDB		-->
-        <dependency>
-             <groupId>org.springframework.boot</groupId>
-             <artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
-         </dependency>
-
-        <!-- R2DBC -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-r2dbc</artifactId>
-        </dependency>
-        <!-- R2DBC - PostgreSQL		-->
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-postgresql</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
         <!-- WebFlux -->
@@ -96,18 +80,13 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
-    <!-- Build -->
+    <!-- Build  -->
     <build>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
