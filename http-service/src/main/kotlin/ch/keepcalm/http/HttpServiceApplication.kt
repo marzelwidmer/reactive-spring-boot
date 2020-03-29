@@ -44,25 +44,29 @@ class RouterConfig(private val service: GreetingsService) {
 
     @Bean
     fun route() = router {
-        GET("/greeting/{name}", ::greet)
-        GET("/greetings/{name}", ::greeMany)  // Server-Sent Events
+        GET("/greetings/{name}", ::greeMany)
+        GET("/greeting/{name}", ::greetOnce)
     }
 
-    private fun greet(req: ServerRequest) = ok().body(service.greet(req.pathVariable("name")))
     private fun greeMany(req: ServerRequest) = ok().contentType(MediaType.TEXT_EVENT_STREAM)
         .body(service.greetMay(GreetingsRequest(req.pathVariable("name"))))
+
+    private fun greetOnce(req: ServerRequest) = ok()
+        .body(service.greetOnce(GreetingsRequest(req.pathVariable("name"))))
 }
 
 @Service
 class GreetingsService {
 
+    fun greet(name: String) = GreetingsResponse(message = "Hello ${name} @ ${Instant.now()}")
+
+
     fun greetMay(request: GreetingsRequest) =
-        Flux.fromStream(Stream.generate({ greet(request.name) }))
+        Flux.fromStream(
+            Stream.generate { greet(request.name) })
             .delayElements(Duration.ofSeconds(1))
 
-    fun greetOnce(request: GreetingsRequest) = greet(request.name)
-
-    fun greet(name: String) = Mono.just(GreetingsResponse(message = "Hello ${name} @ ${Instant.now()}"))
+    fun greetOnce(request: GreetingsRequest) = Mono.just(greet(request.name))
 
 }
 
@@ -77,15 +81,14 @@ data class GreetingsResponse(val message: String)
 //  | |  | | \ V /| |___
 //  |_|  |_|  \_/  \____|
 //
-@RestController
-class GreetingsRestcontroller(private val greetingsService: GreetingsService) {
-
-    private val logger = LoggerFactory.getLogger(javaClass)
-
-    @GetMapping("/greeting/{name}")
-    fun greet(@PathVariable name: String): Mono<GreetingsResponse> {
-        logger.info("----> $name")
-        return greetingsService.greet(name)
-    }
-
-}
+//@RestController
+//class GreetingsRestcontroller(private val greetingsService: GreetingsService) {
+//
+//    private val logger = LoggerFactory.getLogger(javaClass)
+//
+//    @GetMapping("/greeting/{name}")
+//    fun greet(@PathVariable name: String): Mono<GreetingsResponse> {
+//        logger.info("----> $name")
+//        return greetingsService.greetOnce(GreetingsRequest(name))
+//    }
+//}
