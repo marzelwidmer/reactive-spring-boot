@@ -79,3 +79,8 @@ SELECT * FROM reservation;
  40 | Dr. Syer
 (8 rows)
 ```
+
+# Httpie Call Stream API
+```bash
+http --stream  :8080/greetings/flux
+```

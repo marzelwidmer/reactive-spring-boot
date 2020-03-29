@@ -45,7 +45,7 @@ class RouterConfig(private val service: GreetingsService) {
     @Bean
     fun route() = router {
         GET("/greetings/{name}", ::greeMany)
-        GET("/greeting/{name}", ::greetOnce)
+        GET("/greeting/{name}", ::greetOnce)  // http --stream  :8080/greetings/flux
     }
 
     private fun greeMany(req: ServerRequest) = ok().contentType(MediaType.TEXT_EVENT_STREAM)
