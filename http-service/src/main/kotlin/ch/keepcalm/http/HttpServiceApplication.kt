@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.hateoas.config.EnableHypermediaSupport
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerRequest
-import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.router
 import reactor.core.publisher.Mono
@@ -48,8 +48,7 @@ class RouterConfig(private val service: GreetingsService) {
         //        })
     }
 
-    private fun greet(req: ServerRequest) =
-        ServerResponse.ok().body(service.greet(request = GreetingsRequest(name = req.pathVariable("name"))))
+    private fun greet(req: ServerRequest) = ok().body(service.greet(request = GreetingsRequest(name = req.pathVariable("name"))))
 }
 
 
