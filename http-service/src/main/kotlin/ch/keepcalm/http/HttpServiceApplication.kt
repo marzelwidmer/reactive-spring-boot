@@ -6,6 +6,7 @@ import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.hateoas.config.EnableHypermediaSupport
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -14,8 +15,11 @@ import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.router
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.time.Duration
 import java.time.Instant
+import java.util.stream.Stream
 
 @SpringBootApplication
 @EnableHypermediaSupport(type = [EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS])
@@ -41,23 +45,30 @@ class RouterConfig(private val service: GreetingsService) {
     @Bean
     fun route() = router {
         GET("/greeting/{name}", ::greet)
-
-
-        //      val resourceUrl = "/greeting"
-        //        GET("$resourceUrl/{name}") { request ->
-        //            ServerResponse.ok().body(service.greet(request = GreetingsRequest(name = request.pathVariable("name"))))
-        //        }
-        //        GET("$resourceUrl/{name}", { serverRequest ->
-        //            val name = serverRequest.pathVariable("name")
-        //            val request = GreetingsRequest(name = name)
-        //            val response = service.greet(request = request)
-        //            ServerResponse.ok().body(response)
-        //        })
+        GET("/greetings/{name}", ::greeMany)  // Server-Sent Events
     }
 
-    private fun greet(req: ServerRequest) =
-        ok().body(service.greet(request = GreetingsRequest(name = req.pathVariable("name"))))
+    private fun greet(req: ServerRequest) = ok().body(service.greet(req.pathVariable("name")))
+    private fun greeMany(req: ServerRequest) = ok().contentType(MediaType.TEXT_EVENT_STREAM)
+        .body(service.greetMay(GreetingsRequest(req.pathVariable("name"))))
 }
+
+@Service
+class GreetingsService {
+
+    fun greetMay(request: GreetingsRequest) =
+        Flux.fromStream(Stream.generate({ greet(request.name) }))
+            .delayElements(Duration.ofSeconds(1))
+
+    fun greetOnce(request: GreetingsRequest) = greet(request.name)
+
+    fun greet(name: String) = Mono.just(GreetingsResponse(message = "Hello ${name} @ ${Instant.now()}"))
+
+}
+
+
+data class GreetingsRequest(val name: String)
+data class GreetingsResponse(val message: String)
 
 
 //   __  ____     ______
@@ -74,18 +85,7 @@ class GreetingsRestcontroller(private val greetingsService: GreetingsService) {
     @GetMapping("/greeting/{name}")
     fun greet(@PathVariable name: String): Mono<GreetingsResponse> {
         logger.info("----> $name")
-        return greetingsService.greet(GreetingsRequest(name = name))
+        return greetingsService.greet(name)
     }
 
 }
-
-@Service
-class GreetingsService {
-
-    fun greet(request: GreetingsRequest) = Mono.just(GreetingsResponse(message = "Hello ${request.name} @ ${Instant.now()}"))
-
-}
-
-
-data class GreetingsRequest(val name: String)
-data class GreetingsResponse(val message: String)
