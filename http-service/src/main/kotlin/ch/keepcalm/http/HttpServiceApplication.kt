@@ -1,39 +1,76 @@
 package ch.keepcalm.http
 
-import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.hateoas.config.EnableHypermediaSupport
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.reactive.function.server.ServerRequest
+import org.springframework.web.reactive.function.server.ServerResponse
+import org.springframework.web.reactive.function.server.body
+import org.springframework.web.reactive.function.server.router
 import reactor.core.publisher.Mono
 import java.time.Instant
 
-
 @SpringBootApplication
-@EnableHypermediaSupport(type = [ EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS])
+@EnableHypermediaSupport(type = [EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS])
 class HttpServiceApplication
 
 fun main(args: Array<String>) {
     runApplication<HttpServiceApplication>(*args)
 }
 
-@RestController
-class GreetingsRestcontroller(private val greetingsService: GreetingsService) {
+//   ____                 _   _           ____  _         _
+//  |  _ \ ___  __ _  ___| |_(_)_   _____/ ___|| |_ _   _| | ___
+//  | |_) / _ \/ _` |/ __| __| \ \ / / _ \___ \| __| | | | |/ _ \
+//  |  _ <  __/ (_| | (__| |_| |\ V /  __/___) | |_| |_| | |  __/
+//  |_| \_\___|\__,_|\___|\__|_| \_/ \___|____/ \__|\__, |_|\___|
+//                                                  |___/
 
-    private val logger = LoggerFactory.getLogger(javaClass)
+// Functional Controller
+@Configuration
+class RouterConfig(private val service: GreetingsService) {
 
 
-    @GetMapping("/greeting/{name}")
-    fun greet(@PathVariable name: String): Mono<GreetingsResponse> {
-        logger.info("----> $name")
-        return greetingsService.greet(GreetingsRequest(name = name))
+    @Bean
+    fun route() = router {
+        GET("/greeting/{name}", ::greet)
+        //      val resourceUrl = "/greeting"
+        //        GET("$resourceUrl/{name}") { request ->
+        //            ServerResponse.ok().body(service.greet(request = GreetingsRequest(name = request.pathVariable("name"))))
+        //        }
+        //        GET("$resourceUrl/{name}", { serverRequest ->
+        //            val name = serverRequest.pathVariable("name")
+        //            val request = GreetingsRequest(name = name)
+        //            val response = service.greet(request = request)
+        //            ServerResponse.ok().body(response)
+        //        })
     }
 
-
+    private fun greet(req: ServerRequest) =
+        ServerResponse.ok().body(service.greet(request = GreetingsRequest(name = req.pathVariable("name"))))
 }
+
+
+//   __  ____     ______
+//  |  \/  \ \   / / ___|
+//  | |\/| |\ \ / / |
+//  | |  | | \ V /| |___
+//  |_|  |_|  \_/  \____|
+//
+//@RestController
+//class GreetingsRestcontroller(private val greetingsService: GreetingsService) {
+//
+//    private val logger = LoggerFactory.getLogger(javaClass)
+//
+//    @GetMapping("/greeting/{name}")
+//    fun greet(@PathVariable name: String): Mono<GreetingsResponse> {
+//        logger.info("----> $name")
+//        return greetingsService.greet(GreetingsRequest(name = name))
+//    }
+//
+//}
 
 @Service
 class GreetingsService {
