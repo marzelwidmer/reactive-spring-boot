@@ -8,9 +8,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.hateoas.config.EnableHypermediaSupport
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.reactive.function.server.ServerRequest
 import org.springframework.web.reactive.function.server.ServerResponse.ok
 import org.springframework.web.reactive.function.server.body
@@ -44,11 +41,11 @@ class RouterConfig(private val service: GreetingsService) {
 
     @Bean
     fun route() = router {
-        GET("/greetings/{name}", ::greeMany)
+        GET("/greetings/{name}", ::greetMany)
         GET("/greeting/{name}", ::greetOnce)  // http --stream  :8080/greetings/flux
     }
 
-    private fun greeMany(req: ServerRequest) = ok().contentType(MediaType.TEXT_EVENT_STREAM)
+    private fun greetMany(req: ServerRequest) = ok().contentType(MediaType.TEXT_EVENT_STREAM)
         .body(service.greetMay(GreetingsRequest(req.pathVariable("name"))))
 
     private fun greetOnce(req: ServerRequest) = ok()
@@ -58,7 +55,7 @@ class RouterConfig(private val service: GreetingsService) {
 @Service
 class GreetingsService {
 
-    fun greet(name: String) = GreetingsResponse(message = "Hello ${name} @ ${Instant.now()}")
+    fun greet(name: String) = GreetingsResponse(message = "Hello $name @ ${Instant.now()}")
 
 
     fun greetMay(request: GreetingsRequest) =
