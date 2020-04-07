@@ -1,5 +1,6 @@
 package ch.keepcalm.websockets
 
+import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -49,6 +50,8 @@ fun main(args: Array<String>) {
 @Configuration
 class GreetingWebSocketConfiguration {
 
+    private val log = LoggerFactory.getLogger(javaClass)
+
     @Bean
     fun simpleUrlHandlerMapping(webSocketHandler: WebSocketHandler) =
         SimpleUrlHandlerMapping(mapOf("/ws/greetings" to "webSocketHandler"), 10)
@@ -62,6 +65,8 @@ class GreetingWebSocketConfiguration {
                 .flatMap { greetingService.greet(request = it) }
                 .map { it.message }
                 .map { session.textMessage(it) }
+                .doOnEach { log.info("--> $it.type") }
+                .doFinally { log.info("--> finally: $it.type") }
         )
     }
 
