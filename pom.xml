@@ -11,7 +11,8 @@
     <modules>
         <module>http-service</module>
         <module>data-service</module>
-        <module>websockets-service</module>
+        <module>websocket-service</module>
+        <module>greetings-service</module>
     </modules>
 
 </project>

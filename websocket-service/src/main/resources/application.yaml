@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: websocket-service
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      enabled: true
+    restart:
+      enabled: true
+    info:
+      enabled: true
+  info:
+    git:
+      mode: full
