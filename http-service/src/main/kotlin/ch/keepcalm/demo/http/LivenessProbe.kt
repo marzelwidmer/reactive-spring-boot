@@ -1,4 +1,4 @@
-package ch.keepcalm.websocket
+package ch.keepcalm.demo.http
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

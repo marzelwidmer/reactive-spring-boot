@@ -1,4 +1,4 @@
-package ch.keepcalm.websocket
+package ch.keepcalm.demo.websocket
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication

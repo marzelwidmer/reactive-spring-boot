@@ -1,10 +1,10 @@
-package ch.keepcalm.http
+package ch.keepcalm.demo.websocket
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class HttpServiceApplicationTests {
+class WebSocketApplicationTests {
 
 	@Test
 	fun contextLoads() {

@@ -1,4 +1,4 @@
-package ch.keepcalm.http
+package ch.keepcalm.demo.http
 
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
