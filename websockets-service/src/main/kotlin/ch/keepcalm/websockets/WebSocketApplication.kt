@@ -17,10 +17,10 @@ import java.util.stream.Stream
 
 @SpringBootApplication
 @EnableHypermediaSupport(type = [EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS])
-class WebsocketsServiceApplication
+class WebSocketApplication
 
 fun main(args: Array<String>) {
-    runApplication<WebsocketsServiceApplication>(*args)
+    runApplication<WebSocketApplication>(*args)
 }
 
 

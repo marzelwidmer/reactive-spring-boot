@@ -84,3 +84,34 @@ SELECT * FROM reservation;
 ```bash
 http --stream  :8080/greetings/flux
 ```
+
+# WebSocket
+## UI
+Open Browser Web Developer and check console output. 
+http://localhost:8080/ws.html
+
+## Simple Web Socket Client 
+Browser Plugin
+URL:
+```bash
+ws://localhost:8080/ws/greetings
+```
+Request:
+```bash
+Cool
+```
+
+## Websocat
+### PreConditions 
+```bash
+brew install websocat
+```
+
+```bash
+websocat ws://localhost:8080/ws/greetings
+Welcome to my Socket
+Hello Welcome to my Socket  @ 2020-04-07T13:50:06.446784Z
+Hello Welcome to my Socket  @ 2020-04-07T13:50:07.449430Z
+Hello Welcome to my Socket  @ 2020-04-07T13:50:08.453231Z
+Hello Welcome to my Socket  @ 2020-04-07T13:50:09.457839Z
+```
