@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
     runApplication<HttpServiceApplication>(*args)
 }
 
-//   ____                 _   _           ____  _         _
+//   ____                  _   _           ____  _         _
 //  |  _ \ ___  __Í _  ___| |_(_)_   _____/ ___|| |_ _   _| | ___
 //  | |_) / _ \/ _` |/ __| __| \ \ / / _ \___ \| __| | | | |/ _ \
 //  |  _ <  __/ (_| | (__| |_| |\ V /  __/___) | |_| |_| | |  __/
@@ -46,30 +46,30 @@ class RouterConfig(private val service: GreetingsService) {
     }
 
     private fun greetMany(req: ServerRequest) = ok().contentType(MediaType.TEXT_EVENT_STREAM)
-        .body(service.greetMay(GreetingsRequest(req.pathVariable("name"))))
+        .body(service.greetMay(GreetingRequest(req.pathVariable("name"))))
 
     private fun greetOnce(req: ServerRequest) = ok()
-        .body(service.greetOnce(GreetingsRequest(req.pathVariable("name"))))
+        .body(service.greetOnce(GreetingRequest(req.pathVariable("name"))))
 }
 
 @Service
 class GreetingsService {
 
-    fun greet(name: String) = GreetingsResponse(message = "Hello $name @ ${Instant.now()}")
+    fun greet(name: String) = GreetingResponse(message = "Hello $name @ ${Instant.now()}")
 
 
-    fun greetMay(request: GreetingsRequest) =
+    fun greetMay(request: GreetingRequest) =
         Flux.fromStream(
             Stream.generate { greet(request.name) })
             .delayElements(Duration.ofSeconds(1))
 
-    fun greetOnce(request: GreetingsRequest) = Mono.just(greet(request.name))
+    fun greetOnce(request: GreetingRequest) = Mono.just(greet(request.name))
 
 }
 
 
-data class GreetingsRequest(val name: String)
-data class GreetingsResponse(val message: String)
+data class GreetingRequest(val name: String)
+data class GreetingResponse(val message: String)
 
 
 //   __  ____     ______

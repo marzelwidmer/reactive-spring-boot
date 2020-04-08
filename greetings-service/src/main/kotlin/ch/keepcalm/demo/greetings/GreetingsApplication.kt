@@ -13,47 +13,39 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @SpringBootApplication
 class GreetingsApplication {
-    @Bean
-    fun webClient(builder: WebClient.Builder): WebClient {
-        return builder.baseUrl("http://localhost:8080")
-            //            .filter(ExchangeFilterFunctions.basicAuthentication())Å
-            .build()
-    }
+        @Bean
+        fun webClient(builder: WebClient.Builder): WebClient {
+            return builder.baseUrl("http://localhost:8080")
+                //.filter(ExchangeFilterFunctions.basicAuthentication())Å
+                .build()
+        }
 }
 
-
 fun main(args: Array<String>) {
-    runApplication<GreetingsApplication>(*args) {
-        val context = beans {
-            // RedisRateLimiter
-            bean {
-            }
-        }
-        addInitializers(context)
-    }
+    runApplication<GreetingsApplication>(*args)
 }
 
 @Component
-class Client(private val client: WebClient) {
+class Client(private val webClient: WebClient) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     @EventListener(classes = [ApplicationReadyEvent::class])
     fun ready(): Unit {
         val name = "SpringFans"
-        client
+        webClient
             .get()
             .uri("/greeting/{name}", name)
             .retrieve()
             .bodyToMono(GreetingResponse::class.java)
-            .subscribe{log.info("--> Mono: ${it.message}")}
+            .subscribe { log.info("--> Mono: ${it.message}") }
 
-        client
+        webClient
             .get()
             .uri("/greetings/{name}", name)
             .retrieve()
             .bodyToFlux(GreetingResponse::class.java)
-            .subscribe{log.info("--> Flux: ${it.message}")}
+            .subscribe { log.info("--> Flux: ${it.message}") }
     }
 }
 
