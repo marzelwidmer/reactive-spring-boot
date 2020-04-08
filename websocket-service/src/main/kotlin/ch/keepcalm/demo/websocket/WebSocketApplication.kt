@@ -61,7 +61,7 @@ class GreetingWebSocketConfiguration {
         session.send(
             session.receive()
                 .map { it.payloadAsText }
-                .map { GreetingsRequest(it) }
+                .map { GreetingRequest(it) }
                 .flatMap { greetingService.greet(request = it) }
                 .map { it.message }
                 .map { session.textMessage(it) }
@@ -78,13 +78,13 @@ class GreetingWebSocketConfiguration {
 @Service
 class GreetingService {
 
-    fun greetResponse(name: String) = GreetingsResponse(message = "Hello $name @ ${Instant.now()}")
+    fun greetResponse(name: String) = GreetingResponse(message = "Hello $name @ ${Instant.now()}")
 
-    fun greet(request: GreetingsRequest) =
+    fun greet(request: GreetingRequest) =
         Flux.fromStream(Stream.generate {
             greetResponse(request.name)
         }).delayElements(Duration.ofSeconds(1))
 }
 
-data class GreetingsRequest(val name: String)
-data class GreetingsResponse(val message: String)
+data class GreetingRequest(val name: String)
+data class GreetingResponse(val message: String)
