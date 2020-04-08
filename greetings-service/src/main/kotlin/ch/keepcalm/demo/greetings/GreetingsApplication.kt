@@ -6,7 +6,6 @@ import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.event.EventListener
-import org.springframework.context.support.beans
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 
