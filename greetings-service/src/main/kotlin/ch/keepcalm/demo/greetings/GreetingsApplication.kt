@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
 
 
 @SpringBootApplication
@@ -37,7 +38,15 @@ class Client(private val webClient: WebClient) {
             .uri("/greeting/{name}", name)
             .retrieve()
             .bodyToMono(GreetingResponse::class.java)
-            .subscribe { log.info("--> Mono: ${it.message}") }
+            .map(GreetingResponse::message)
+            .onErrorMap { IllegalArgumentException("The original exception was ${it.localizedMessage}") }
+            .onErrorResume {
+                when(it) {
+                    is IllegalArgumentException -> Mono.just(it.message.toString())
+                    else -> Mono.just("Ooopss !!! ")
+                }
+            }
+            .subscribe { log.info("--> Mono: $it") }
 
         webClient
             .get()
