@@ -64,7 +64,6 @@ class Client(private val webClient: WebClient
 
 
         // CircuitBreaker
-
         val http = webClient
             .get()
             .uri("/greeting/{name}", name)
@@ -79,9 +78,7 @@ class Client(private val webClient: WebClient
             }
             .subscribe { log.info("--> CircuitBreaker Mono: $it") }
 
-
     }
-
 
 }
 
