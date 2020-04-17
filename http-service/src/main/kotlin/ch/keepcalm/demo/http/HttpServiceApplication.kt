@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.hateoas.config.EnableHypermediaSupport
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.server.ServerRequest
@@ -19,7 +18,6 @@ import java.time.Instant
 import java.util.stream.Stream
 
 @SpringBootApplication
-@EnableHypermediaSupport(type = [EnableHypermediaSupport.HypermediaType.HAL, EnableHypermediaSupport.HypermediaType.HAL_FORMS])
 class HttpServiceApplication
 
 fun main(args: Array<String>) {

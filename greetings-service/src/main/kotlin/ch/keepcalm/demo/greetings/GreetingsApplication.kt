@@ -9,17 +9,18 @@ import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import reactor.util.retry.Retry
 import java.time.Duration
 
 
 @SpringBootApplication
 class GreetingsApplication {
-        @Bean
-        fun webClient(builder: WebClient.Builder): WebClient {
-            return builder.baseUrl("http://localhost:8080")
-                //.filter(ExchangeFilterFunctions.basicAuthentication())Å
-                .build()
-        }
+    @Bean
+    fun webClient(builder: WebClient.Builder): WebClient {
+        return builder.baseUrl("http://localhost:8080")
+            //.filter(ExchangeFilterFunctions.basicAuthentication())Å
+            .build()
+    }
 }
 
 fun main(args: Array<String>) {
@@ -40,10 +41,10 @@ class Client(private val webClient: WebClient) {
             .retrieve()
             .bodyToMono(GreetingResponse::class.java)
             .map(GreetingResponse::message)
-            .retryBackoff(10, Duration.ofSeconds(1), Duration.ofSeconds(10), 0.3)
+            .retryWhen(Retry.backoff(10, Duration.ofSeconds(10)))
             .onErrorMap { IllegalArgumentException("The original exception was ${it.localizedMessage}") }
             .onErrorResume {
-                when(it) {
+                when (it) {
                     is IllegalArgumentException -> Mono.just(it.message.toString())
                     else -> Mono.just("Ooopss !!! ")
                 }
