@@ -41,12 +41,12 @@ class Client(private val webClient: WebClient) {
             .retrieve()
             .bodyToMono(GreetingResponse::class.java)
             .map(GreetingResponse::message)
-            .retryWhen(Retry.backoff(10, Duration.ofSeconds(10)))
+            .retryWhen(Retry.backoff(2, Duration.ofSeconds(3)))
             .onErrorMap { IllegalArgumentException("The original exception was ${it.localizedMessage}") }
             .onErrorResume {
                 when (it) {
                     is IllegalArgumentException -> Mono.just(it.message.toString())
-                    else -> Mono.just("Ooopss !!! ")
+                    else -> Mono.just("Ooopss !!! ${it.message} ")
                 }
             }
             .subscribe { log.info("--> Mono: $it") }
