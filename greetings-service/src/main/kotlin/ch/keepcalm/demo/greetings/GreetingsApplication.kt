@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.boot.runApplication
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker
 import org.springframework.context.event.EventListener
 import org.springframework.context.support.beans
 import org.springframework.stereotype.Component
@@ -28,6 +29,7 @@ fun main(args: Array<String>) {
                 }
                 bean {
                     ReactiveResilience4JCircuitBreakerFactory()
+                        .create("greeting")
                 }
             }
         )
@@ -35,12 +37,9 @@ fun main(args: Array<String>) {
 }
 
 @Component
-class Client(private val webClient: WebClient
-    , private val reactiveCircuitBreakerFactory: ReactiveResilience4JCircuitBreakerFactory
-) {
+class Client(private val webClient: WebClient, private val circuitBreaker: ReactiveCircuitBreaker) {
 
     private val log = LoggerFactory.getLogger(javaClass)
-
 
     @EventListener(classes = [ApplicationReadyEvent::class])
     fun ready(): Unit {
@@ -63,19 +62,18 @@ class Client(private val webClient: WebClient
             .subscribe { log.info("--> Mono: $it") }
 
 
-        // CircuitBreaker
-        val http = webClient
-            .get()
-            .uri("/greeting/{name}", name)
-            .retrieve()
-            .bodyToMono(GreetingResponse::class.java)
-            .map(GreetingResponse::message)
 
-        reactiveCircuitBreakerFactory
-            .create("greeting")
-            .run(http) {
-                Mono.just("Ooopss CircuitBreaker !!! ${it.message} ")
-            }
+        // Call with CircuitBreaker
+        circuitBreaker.run(
+            webClient
+                .get()
+                .uri("/greeting/{name}", name)
+                .retrieve()
+                .bodyToMono(GreetingResponse::class.java)
+                .map(GreetingResponse::message)
+        ) {
+            Mono.just("Ooopss CircuitBreaker !!! ${it.message} ")
+        }
             .subscribe { log.info("--> CircuitBreaker Mono: $it") }
 
     }
