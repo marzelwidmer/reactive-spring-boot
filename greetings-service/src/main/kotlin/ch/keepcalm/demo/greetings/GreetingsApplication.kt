@@ -52,11 +52,11 @@ class Client(private val webClient: WebClient, private val circuitBreaker: React
             .bodyToMono(GreetingResponse::class.java)
             .map(GreetingResponse::message)
             .retryWhen(Retry.backoff(2, Duration.ofSeconds(3)))
-            .onErrorMap { IllegalArgumentException("The original exception was ${it.localizedMessage}") }
+            .onErrorMap { IllegalArgumentException("The original exception was $it.localizedMessage") }
             .onErrorResume {
                 when (it) {
                     is IllegalArgumentException -> Mono.just(it.message.toString())
-                    else -> Mono.just("Ooopss !!! ${it.message} ")
+                    else -> Mono.just("Ooopss !!! $it.message ")
                 }
             }
             .subscribe { log.info("--> Mono: $it") }
@@ -72,7 +72,7 @@ class Client(private val webClient: WebClient, private val circuitBreaker: React
                 .bodyToMono(GreetingResponse::class.java)
                 .map(GreetingResponse::message)
         ) {
-            Mono.just("Ooopss CircuitBreaker !!! ${it.message} ")
+            Mono.just("Ooopss CircuitBreaker !!! $it.message ")
         }
             .subscribe { log.info("--> CircuitBreaker Mono: $it") }
 
